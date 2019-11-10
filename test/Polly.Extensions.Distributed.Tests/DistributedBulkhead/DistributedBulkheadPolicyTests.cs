@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Moq;
 using Polly.Bulkhead;
@@ -57,11 +58,11 @@ namespace Polly.Extensions.Tests.DistributedBulkhead
         {
             // Given
             Mock.Get(_backplane)
-                .Setup(x => x.IncrementCurrentUsedCountAsync(_keyPrefix, 1))
+                .Setup(x => x.IncrementCurrentUsedCountAsync(_keyPrefix, 1, CancellationToken.None))
                 .ReturnsAsync(1);
             
             Mock.Get(_backplane)
-                .Setup(x => x.DecrementCurrentUsedCountAsync(_keyPrefix, 1))
+                .Setup(x => x.DecrementCurrentUsedCountAsync(_keyPrefix, 1, CancellationToken.None))
                 .ReturnsAsync(1);
 
             var testTask = TaskHelper.EmptyTask;
@@ -72,7 +73,7 @@ namespace Polly.Extensions.Tests.DistributedBulkhead
             // Then
             result.Outcome.ShouldBe(OutcomeType.Successful);
             Mock.Get(_backplane)
-                .Verify(x => x.DecrementCurrentUsedCountAsync(_keyPrefix, 1),
+                .Verify(x => x.DecrementCurrentUsedCountAsync(_keyPrefix, 1, CancellationToken.None),
                     Times.Once());
         }
         
@@ -81,11 +82,11 @@ namespace Polly.Extensions.Tests.DistributedBulkhead
         {
             // Given
             Mock.Get(_backplane)
-                .Setup(x => x.IncrementCurrentUsedCountAsync(_keyPrefix, 1))
+                .Setup(x => x.IncrementCurrentUsedCountAsync(_keyPrefix, 1, CancellationToken.None))
                 .ReturnsAsync(_maxParallelization + 1);
             
             Mock.Get(_backplane)
-                .Setup(x => x.DecrementCurrentUsedCountAsync(_keyPrefix, 1))
+                .Setup(x => x.DecrementCurrentUsedCountAsync(_keyPrefix, 1, CancellationToken.None))
                 .ReturnsAsync(1);
 
             var testTask = TaskHelper.EmptyTask;
@@ -97,7 +98,7 @@ namespace Polly.Extensions.Tests.DistributedBulkhead
             result.Outcome.ShouldBe(OutcomeType.Failure);
             result.FinalException.ShouldBeOfType<BulkheadRejectedException>();
             Mock.Get(_backplane)
-                .Verify(x => x.DecrementCurrentUsedCountAsync(_keyPrefix, 1),
+                .Verify(x => x.DecrementCurrentUsedCountAsync(_keyPrefix, 1, CancellationToken.None),
                     Times.Once());
         }
     }

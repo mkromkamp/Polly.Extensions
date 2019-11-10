@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Polly.Utilities;
-using StackExchange.Redis;
 
 namespace Polly.Extensions.Distributed.DistributedBulkhead
 {

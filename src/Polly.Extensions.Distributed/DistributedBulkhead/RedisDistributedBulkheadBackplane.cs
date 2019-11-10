@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using StackExchange.Redis;
 
@@ -23,7 +24,7 @@ namespace Polly.Extensions.Distributed.DistributedBulkhead
                 : 0;
         }
 
-        public async Task<long> GetCurrentUsedCountAsync(string bulkheadKey)
+        public async Task<long> GetCurrentUsedCountAsync(string bulkheadKey, CancellationToken cancellationToken = default)
         {
             var currentCount = await _database.StringGetAsync(UsedCountKey(bulkheadKey));
             
@@ -32,17 +33,17 @@ namespace Polly.Extensions.Distributed.DistributedBulkhead
                 : 0;
         }
 
-        public Task<long> IncrementCurrentUsedCountAsync(string bulkheadKey, int count = 1)
+        public Task<long> IncrementCurrentUsedCountAsync(string bulkheadKey, int count = 1, CancellationToken cancellationToken = default)
         {
             return _database.StringIncrementAsync(UsedCountKey(bulkheadKey), count);
         }
 
-        public Task<long> DecrementCurrentUsedCountAsync(string bulkheadKey, int count = 1)
+        public Task<long> DecrementCurrentUsedCountAsync(string bulkheadKey, int count = 1, CancellationToken cancellationToken = default)
         {
             return _database.StringDecrementAsync(UsedCountKey(bulkheadKey), count);
         }
 
-        public async Task<T> WithLeaseAsync<T>(string bulkheadKey, Func<Task<T>> func)
+        public async Task<T> WithLeaseAsync<T>(string bulkheadKey, Func<Task<T>> func, CancellationToken cancellationToken = default)
         {
             try
             {

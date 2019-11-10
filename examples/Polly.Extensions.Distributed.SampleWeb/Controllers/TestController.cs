@@ -35,11 +35,11 @@ namespace Polly.Extensions.SampleWeb.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            var policyResult = await _distributedBulkhead.ExecuteAndCaptureAsync(async () =>
+            var policyResult = await _distributedBulkhead.ExecuteAndCaptureAsync(async (ct) =>
                 {
-                    await Task.Delay(15000, cancellationToken);
+                    await Task.Delay(15000, ct);
                     return 4;
-                });
+                }, cancellationToken);
 
             return Ok(policyResult.Outcome.ToString("G"));
         }

@@ -32,7 +32,10 @@ namespace Polly.Extensions.Distributed.DistributedBulkhead
         {
             try
             {
-                var usedCount = await _backplane.IncrementCurrentUsedCountAsync(_keyPrefix).ConfigureAwait(continueOnCapturedContext);
+                var usedCount = await _backplane
+                    .IncrementCurrentUsedCountAsync(_keyPrefix, cancellationToken: cancellationToken)
+                    .ConfigureAwait(continueOnCapturedContext);
+                
                 if (usedCount > _maxParallelization)
                 {
                     await _onBulkheadRejectedAsync(context).ConfigureAwait(continueOnCapturedContext);
@@ -43,7 +46,9 @@ namespace Polly.Extensions.Distributed.DistributedBulkhead
             }
             finally
             {
-                await _backplane.DecrementCurrentUsedCountAsync(_keyPrefix).ConfigureAwait(continueOnCapturedContext);
+                await _backplane
+                    .DecrementCurrentUsedCountAsync(_keyPrefix, cancellationToken: cancellationToken)
+                    .ConfigureAwait(continueOnCapturedContext);
             }
         }
         
