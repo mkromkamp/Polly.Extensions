@@ -35,4 +35,4 @@ In the code sample above we create a `Policy` that handles all expections. The d
 
 ### Bulkhead key
 
-To make use of more than one distributed bulkhead you have to specify the bulkhead key during the creation of the policy. This bulkhead key is the unique identifier of this bulkhead and can be used accross applications.
+To make use of more than one distributed bulkhead you have to specify the bulkhead key during the creation of the policy. This bulkhead key is the unique identifier of this bulkhead and is persistent across application restarts.
