@@ -43,16 +43,16 @@ namespace Polly.Extensions.Distributed.DistributedBulkhead
             return _database.StringDecrementAsync(UsedCountKey(bulkheadKey), count);
         }
 
-        public async Task<T> WithLeaseAsync<T>(string bulkheadKey, Func<Task<T>> func, CancellationToken cancellationToken = default)
+        public async Task<TResult> WithLeaseAsync<TResult>(string bulkheadKey, int count, Func<long, Task<TResult>> func, CancellationToken cancellationToken = default)
         {
             try
             {
-                await IncrementCurrentUsedCountAsync(bulkheadKey);
-                return await func();
+                var currentUsed = await IncrementCurrentUsedCountAsync(bulkheadKey, count, cancellationToken);
+                return await func(currentUsed);
             }
             finally
             {
-                await DecrementCurrentUsedCountAsync(bulkheadKey);
+                await DecrementCurrentUsedCountAsync(bulkheadKey, count, cancellationToken);
             }
         }
     }

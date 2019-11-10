@@ -29,6 +29,6 @@ namespace Polly.Extensions.Distributed.DistributedBulkhead
         /// <summary>
         /// Lease on bulkhead action while performing the task.
         /// </summary>
-        Task<T> WithLeaseAsync<T>(string bulkheadKey, Func<Task<T>> func, CancellationToken cancellationToken = default);
+        Task<TResult> WithLeaseAsync<TResult>(string bulkheadKey, int count, Func<long, Task<TResult>> func, CancellationToken cancellationToken = default);
     }
 }
